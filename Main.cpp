@@ -1,37 +1,51 @@
 #include <GLFW/glfw3.h>
+#include <cmath>
+#include <iostream>
+#include <glad/glad.h>
 
-int main(void)
+
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-    GLFWwindow* window;
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+}
 
-    /* Initialize the library */
-    if (!glfwInit())
-        return -1;
+int main()
+{
+    glfwInit();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
-    if (!window)
-    {
+    GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+    GLFWwindow* window = glfwCreateWindow(mode->width, mode->height, "RayCasting", monitor, NULL);
+
+    if (window == NULL) {
+        std::cout << "Failed to create GLFW window." << std::endl;
         glfwTerminate();
         return -1;
     }
 
-    /* Make the window's context current */
     glfwMakeContextCurrent(window);
+    gladLoadGL();
 
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
-    {
-        /* Render here */
+    glfwSetKeyCallback(window,key_callback);
+
+    while (!glfwWindowShouldClose(window)) {
+        // Set the clear color here
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        /* Swap front and back buffers */
-        glfwSwapBuffers(window);
-
-        /* Poll for and process events */
+        // Process events
         glfwPollEvents();
+
+        // Swap front and back buffers
+        glfwSwapBuffers(window);
     }
 
+    glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
 }
+
